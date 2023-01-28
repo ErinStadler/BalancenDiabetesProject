@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Balance n Diabetes{% endblock %}
+
+{% block head %}Sign up{% endblock %}
+
+{% block body %}
+<h1>Please fill out all fields.</h1>
+<form action="/user" method="POST">
+    <p>What is your name? <br><input type="text" name="name" required></p>
+    <p>What is your blood sugar minimum range? <br><input type="number" name="min_range" value="70" placeholder="70" min="50"></p>
+    <p>What is your blood sugar maximum range? <br><input type="number" name="max_range" value="200" placeholder="200"max="200"></p>
+    <p>Email <br><input type="text" name="email" required></p>
+    <p>Password <br><input type="password" name="password" required></p>
+    <p><input type="submit"></p>
+</form>
+<p>Already have an account?</p>
+<a href="/login">Login</a>
+{% endblock %}

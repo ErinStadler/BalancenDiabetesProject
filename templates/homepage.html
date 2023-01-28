@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Balance n Diabetes{% endblock %}
+
+{% block head %}Welcome {{ name }}, to the Balance n Diabetes family!{% endblock %}
+
+{% block body %}
+<div><canvas id="glucose_chart"></canvas></div>
+
+<form action="/create_bs_entry" method="POST">
+    <h3>Blood sugar entry <br><input type="number" name="bloodsugar_entry"></h3>
+    <input type="submit">
+</form>
+<form action="/create_insulin_entry" method="POST">
+    <h3>Insulin entry <br><input type="number" name="insulin_entry"></h3>
+    <input type="submit">
+</form>
+<a href="/data">See all data</a>
+<script src="/static/reactive.js"></script>
+{% endblock %}
