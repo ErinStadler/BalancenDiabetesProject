@@ -145,6 +145,16 @@ def data_page():
 
     return render_template("data.html")
 
+@app.route("/quotes")
+def quotes_responses():
+    user_email = session.get('email')
+    user = crud.get_user_by_email(user_email)
+
+    min = user.min_range
+    max = user.max_range
+
+    
+
 @app.route("/entries")
 def get_entries():
 
@@ -152,12 +162,10 @@ def get_entries():
     user = crud.get_user_by_email(user_email)
     # print("get user by email ran")
     # print(user)
+    
     bs_entries = crud.get_bs_by_user_id(user.user_id)
     # print("get bs by user id ran")
     # print(bs_entries)
-
-    min = user.min_range
-    max = user.max_range
 
     user_details = []
     for blood_sugar_obj in bs_entries:
@@ -165,9 +173,8 @@ def get_entries():
                              'date': blood_sugar_obj.input_date.isoformat()})
     # print("this is user details")
     # print(user_details)
-    return jsonify({'user_entries': user_details,
-                    'min': min,
-                    'max': max})
+
+    return jsonify({'user_entries': user_details})
 
 if __name__ == "__main__":
     connect_to_db(app)

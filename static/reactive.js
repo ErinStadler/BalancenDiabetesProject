@@ -22,7 +22,7 @@ new Chart(document.querySelector('#glucose_chart'), {
           x: {
             type: 'time',
             time: {
-              tooltipFormat: 'LLLL dd', // Luxon format string
+              tooltipFormat: 'LLLL dd', 
               unit: 'day',
             },
           },
