@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+<!-- This is the official homepage that a user is brought to when signed in.
+    This displays forms to input bloodsugar and insulin as well as show a 
+    chart displaying current bloodsugar entries. -->
 
 {% block nav %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -24,7 +27,7 @@
                 <a class="link" href="/data">Data</a>
             </li>
             <li class="nav-item">
-                <a class="link" href="/">About</a>
+                <a class="link" href="/info">About</a>
             </li>
             <li class="nav-item">
                 <a class="link" href="/account">Account</a>
@@ -55,7 +58,7 @@
 {% endblock %}
 
 {% block body %}
-<div class="container">
+<div class="container text=centered">
     <div class="row">
         <div class="col">
             <h1>Welcome {{ name }}, to the Balance in Diabetes family!</h1>
@@ -77,5 +80,5 @@
         </div>
     </div>
 </div>
-<script src="/static/reactive.js"></script>
+<script src="/static/reactiveChart.js"></script>
 {% endblock %}

@@ -1,6 +1,5 @@
 from model import db, User, Bloodsugar, Insulin, connect_to_db
 
-
 def create_user(email, password, name, min_range, max_range):
     """creating new user"""
 
@@ -41,10 +40,24 @@ def create_insulin(user_id, insulin_use, input_date):
 def get_bs_by_user_id(user_id):
 
     bloodsugar = Bloodsugar.query.filter(Bloodsugar.user_id == user_id).all()
-    print("this is blood sugar entries")
-    print(bloodsugar)
+    # print("this is blood sugar entries")
+    # print(bloodsugar)
 
     return bloodsugar
+
+def get_Insulin_by_user_id(user_id):
+
+    insulin = Insulin.query.filter(Insulin.user_id == user_id).all()
+    # print("this is blood sugar entries")
+    # print(bloodsugar)
+
+    return insulin
+
+def get_bs_by_dates(date):
+
+    result = Bloodsugar.query.filter(Bloodsugar.input_date > date).all()
+
+    return result
 
 if __name__ == '__main__':
     from server import app

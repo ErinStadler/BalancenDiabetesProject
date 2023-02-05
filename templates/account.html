@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+<!-- User's account page. Can change min and max range and update password. -->
+
+{% block head %}Data{% endblock %}
+
+{% block nav %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a id="brand">Balance in Diabetes</a>
+    <button
+    class="navbar-toggler"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+    >
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="link" href="/homepage">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="link" href="/data">Data</a>
+            </li>
+            <li class="nav-item">
+                <a class="link" href="/info">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="link" href="/account">Account</a>
+            </li>
+            <li class="nav-item">
+                <a class="link" href="/logout">Sign Out</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a
+                    class="nav-link dropdown-toggle"
+                    id="navbarDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                >Resources</a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="https://www.instagram.com/type2diabetes.nutritionist/?hl=en">type2diabetes.nutritionist on Instagram</a></li>
+                    <li><a class="dropdown-item" href="https://www.milkandhoneynutrition.com">Milk and Honey Nutrition</a></li>
+                    <li><a class="dropdown-item" href="https://www.diabetesfoodhub.org">Diabetes Food Hub</a></li>
+                    <li><a class="dropdown-item" href="https://diabetes.org">Diabetes.org</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+</nav>
+{% endblock %}

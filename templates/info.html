@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
-<!-- This is where an existing user is able to login.
-    A link to the sign up page is provided if they don't have an account. -->
+<!-- Page a user starts at. 
+    They get information on the app and it's functionality.
+    This is for users if signed in. -->
 
 {% block nav %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -11,7 +12,7 @@
     data-bs-toggle="collapse"
     data-bs-target="#navbarSupportedContent"
     aria-controls="navbarSupportedContent"
-    aria-expanded="false"
+    aria-expanded="true"
     aria-label="Toggle navigation"
     >
         <span class="navbar-toggler-icon"></span>
@@ -20,10 +21,19 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="link" href="/">About</a>
+                <a class="link" href="/homepage">Home</a>
             </li>
             <li class="nav-item">
-                <a class="link" href="/signup">Create Account</a>
+                <a class="link" href="/data">Data</a>
+            </li>
+            <li class="nav-item">
+                <a class="link" href="/info">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="link" href="/account">Account</a>
+            </li>
+            <li class="nav-item">
+                <a class="link" href="/logout">Sign Out</a>
             </li>
             <li class="nav-item dropdown">
                 <a
@@ -32,7 +42,7 @@
                     role="button"
                     data-bs-toggle="dropdown"
                     aria-haspopup="true"
-                    aria-expanded="false"
+                    aria-expanded="true"
                 >Resources</a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="https://www.instagram.com/type2diabetes.nutritionist/?hl=en">type2diabetes.nutritionist on Instagram</a></li>
@@ -43,23 +53,22 @@
             </li>
         </ul>
     </div>
+
 </nav>
 {% endblock %}
 
 {% block body %}
+
 <div class="container text-center">
     <div class="row">
-        <h1>Login</h1>
-        <form action="/user_login" method="POST">
-            <p>Email <br><input type="text" name="email" 
-                pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}$" required></p>
-            <p>Password <br><input type="password" name="password" 
-                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
-                title="Must contain one number, one uppercase letter, one lower case letter and must be 8 characters long" required></p>
-            <p><input type="submit"></p>
-        </form>
-        <p>Don't have an account?</p>
-        <a href="/signup">Sign up</a>
+        <div class="col">
+            <h1>Balance in Diabetes</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>Insert info on app and disease here (to be completed)</p>
+        </div>
     </div>
 </div>
 {% endblock %}
