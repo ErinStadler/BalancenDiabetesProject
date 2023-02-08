@@ -1,4 +1,10 @@
 from model import db, User, Bloodsugar, Insulin, connect_to_db
+from sqlalchemy import create_engine, MetaData, Table, Column, Numeric, Integer, VARCHAR, text
+from sqlalchemy.sql.expression import update
+
+eng = create_engine('postgresql:///users', echo = True)
+meta = MetaData()
+conn = eng.connect
 
 def create_user(email, password, name, min_range, max_range):
     """creating new user"""
@@ -58,6 +64,35 @@ def get_bs_by_dates(date):
     result = Bloodsugar.query.filter(Bloodsugar.input_date > date).all()
 
     return result
+
+def update_min(new_num, id):
+
+    db.session.query(User).\
+        filter(User.user_id == id).\
+        update({'min_range': new_num})
+    db.session.commit()    
+
+
+def update_max(new_num, id):
+
+    db.session.query(User).\
+        filter(User.user_id == id).\
+        update({'max_range': new_num})
+    db.session.commit() 
+
+def update_name(new_name, id):
+
+    db.session.query(User).\
+        filter(User.user_id == id).\
+        update({'name': new_name})
+    db.session.commit() 
+
+def update_password(new_pass, id):
+
+    db.session.query(User).\
+        filter(User.user_id == id).\
+        update({'password': new_pass})
+    db.session.commit() 
 
 if __name__ == '__main__':
     from server import app

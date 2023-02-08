@@ -4,6 +4,9 @@ import crud
 from jinja2 import StrictUndefined
 from datetime import date, timedelta, datetime
 from random import choice
+import bcrypt
+import hashlib
+
 
 app = Flask(__name__)
 app.secret_key = "dev"
@@ -83,12 +86,21 @@ def login():
     email = request.form.get("email")
     password = request.form.get("password")
 
+    salt = "ftviyogy8osbzyfucesuo"
+    database_password = password+salt
+    hashed = hashlib.md5(database_password.encode())
+
     user = crud.get_user_by_email(email)
 
     if not user or user.password != password:
         flash("email or password is incorrect.")
 
         return redirect("/login")
+    
+    # if not user or user.password != hashed.hexdigest():
+    #     flash("email or password is incorrect.")
+
+    #     return redirect("/login")
 
     else:
         user_name = user.name
@@ -109,6 +121,11 @@ def register():
     max_range = request.form.get("max_range")
     name = request.form.get("name")
 
+    salt = "ftviyogy8osbzyfucesuo"
+    database_password = password+salt
+    hashed = hashlib.md5(database_password.encode())
+    # print("result from hash")
+    # print(hashed.hexdigest())
 
     if crud.get_user_by_email(email):
         """if a user exists, tell them and redirect back to sign up page 
@@ -122,7 +139,7 @@ def register():
         
         if min_range or max_range == '':
 
-            user = crud.create_user_with_defaults(email, password, name)
+            user = crud.create_user_with_defaults(email, hashed.hexdigest(), name)
             db.session.add(user)
             db.session.commit()
             flash("account successfully created! Please login.")
@@ -130,13 +147,89 @@ def register():
             return redirect("/login")
 
         else:
-            user = crud.create_user(email, password, min_range, max_range, name)
+            user = crud.create_user(email, hashed.hexdigest(), min_range, max_range, name)
 
             db.session.add(user)
             db.session.commit()
             flash("account successfully created! Please login.")
 
             return redirect("/login")
+        
+@app.route("/update_min_range", methods=['POST'])
+def update_min_range():
+    user_email = session.get("email")
+    user = crud.get_user_by_email(user_email)
+
+    new_min = request.form.get('update_min_range')
+
+    if int(user.min_range) != int(new_min):
+
+        crud.update_min(new_min, user.user_id)
+
+        flash(f"Min Range Updated! It is now {new_min}.")
+
+    else:
+        flash(f"your min range is already {new_min}, please enter another value to update min range.")
+
+    return redirect("/account")
+
+@app.route("/update_max_range", methods=['POST'])
+def update_max_range():
+    user_email = session.get("email")
+    user = crud.get_user_by_email(user_email)
+
+    new_min = request.form.get('update_max_range')
+
+    if int(user.max_range) != int(new_min):
+
+        crud.update_max(new_min, user.user_id)
+
+        flash(f"Min Range Updated! It is now {new_min}.")
+
+    else:
+        flash(f"your min range is already {new_min}, please enter another value to update min range.")
+
+    return redirect("/account")
+
+@app.route("/update_name", methods=['POST'])
+def update_name():
+    user_email = session.get("email")
+    user = crud.get_user_by_email(user_email)
+
+    new_name = request.form.get('update_name')
+
+    if user.name != new_name:
+
+        crud.update_name(new_name, user.user_id)
+
+        flash(f"You're name has been Updated!")
+
+    else:
+        flash(f"{new_name}, is already set as your name.")
+
+    return redirect("/account")
+
+@app.route("/update_password", methods=['POST'])
+def update_password():
+    user_email = session.get("email")
+    user = crud.get_user_by_email(user_email)
+
+    new_pass = request.form.get('update_password')
+
+    salt = "ftviyogy8osbzyfucesuo"
+    database_password = new_pass+salt
+    hashed = hashlib.md5(database_password.encode())
+
+    if user.password != new_pass:
+
+        crud.update_password(hashed.hexdigest(), user.user_id)
+
+        flash(f"You're password has been Updated!")
+
+    else:
+        flash(f"This is already set as your password.")
+
+    return redirect("/account")
         
 @app.route("/create_bs_entry", methods=["POST"])
 def create_bs_entry():
@@ -375,27 +468,78 @@ def data_by_ninety_days():
 @app.route("/entries")
 def get_entries():
     """getting bloodsugar entries for chart"""
-
-    """get user in session details, then get entries on corresponding user based on user_id."""
-    user_email = session.get('email')
+    user_email = session.get("email")
     user = crud.get_user_by_email(user_email)
-    # print("get user by email ran")
-    # print(user)
     bs_entries = crud.get_bs_by_user_id(user.user_id)
-    # print("get bs by user id ran")
-    # print(bs_entries)
 
-    """looping through bs_entries and getting each object. 
-    Then we append the bs number and its date as key valued pairs to user_details"""
-    user_details = []
+    oneDayAgo = datetime.now() - timedelta(days=1)
+    one = crud.get_bs_by_dates(oneDayAgo)
+
+    twoDayAgo = datetime.now() - timedelta(days=2)
+    two = crud.get_bs_by_dates(twoDayAgo)
+
+    sevenDaysAgo = datetime.now() - timedelta(days=7)
+    seven = crud.get_bs_by_dates(sevenDaysAgo)
+
+    fourteenDaysAgo = datetime.now() - timedelta(days=14)
+    fourteen = crud.get_bs_by_dates(fourteenDaysAgo)
+
+    thirtyDaysAgo = datetime.now() - timedelta(days=30)
+    thirty = crud.get_bs_by_dates(thirtyDaysAgo)
+
+    sixtyDaysAgo = datetime.now() - timedelta(days=60)
+    sixty = crud.get_bs_by_dates(sixtyDaysAgo)
+
+    ninetyDaysAgo = datetime.now() - timedelta(days=90)
+    ninety = crud.get_bs_by_dates(ninetyDaysAgo)
+
+    all_bs_dates = []
+    one_bs_date = []
+    two_bs_dates = []
+    seven_bs_dates = []
+    fourteen_bs_dates = []
+    thirty_bs_dates = []
+    sixty_bs_dates = []
+    ninety_bs_dates = []
     for blood_sugar_obj in bs_entries:
-        user_details.append({'bs': blood_sugar_obj.bloodsugar,
+        all_bs_dates.append({'bs': blood_sugar_obj.bloodsugar,
                              'date': blood_sugar_obj.input_date.isoformat()})
-    # print("this is user details")
-    # print(user_details)
+            
+    for blood_sugar_objOne in one:
+        one_bs_date.append({'bs': blood_sugar_objOne.bloodsugar,
+                             'date': blood_sugar_objOne.input_date.isoformat()})
+            
+    for blood_sugar_objTwo in two:
+        two_bs_dates.append({'bs': blood_sugar_objTwo.bloodsugar,
+                             'date': blood_sugar_objTwo.input_date.isoformat()})
+                
+    for blood_sugar_objSeven in seven:
+        seven_bs_dates.append({'bs': blood_sugar_objSeven.bloodsugar,
+                             'date': blood_sugar_objSeven.input_date.isoformat()})
+                    
+    for blood_sugar_objFourteen in fourteen:
+        fourteen_bs_dates.append({'bs': blood_sugar_objFourteen.bloodsugar,
+                             'date': blood_sugar_objFourteen.input_date.isoformat()})
+                        
+    for blood_sugar_objThirty in thirty:
+        thirty_bs_dates.append({'bs': blood_sugar_objThirty.bloodsugar,
+                             'date': blood_sugar_objThirty.input_date.isoformat()})
+                            
+    for blood_sugar_objSixty in sixty:
+        sixty_bs_dates.append({'bs': blood_sugar_objSixty.bloodsugar,
+                             'date': blood_sugar_objSixty.input_date.isoformat()})
+                                
+    for blood_sugar_objNinety in ninety:
+        ninety_bs_dates.append({'bs': blood_sugar_objNinety.bloodsugar,
+                             'date': blood_sugar_objNinety.input_date.isoformat()})
+                                    
+    # print("this is two days list")
+    # print(two_bs_dates)
 
-    """jsonify user_details to send to chart."""
-    return jsonify({'user_entries': user_details})
+    return jsonify({'all_bs_dates': all_bs_dates, 'one_bs_date': one_bs_date, 
+                    'two_bs_dates': two_bs_dates, 'seven_bs_dates': seven_bs_dates, 
+                    'fourteen_bs_dates': fourteen_bs_dates, 'thirty_bs_dates': thirty_bs_dates, 
+                    'sixty_bs_dates': sixty_bs_dates, 'ninety_bs_dates': ninety_bs_dates})
 
 if __name__ == "__main__":
     connect_to_db(app)
