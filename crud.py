@@ -1,4 +1,4 @@
-from model import db, User, Bloodsugar, Insulin, connect_to_db
+from model import db, User, Bloodsugar, Insulin, Food, connect_to_db
 from sqlalchemy import create_engine, MetaData, Table, Column, Numeric, Integer, VARCHAR, text
 from sqlalchemy.sql.expression import update
 
@@ -23,8 +23,6 @@ def create_user_with_defaults(email, password, name):
 def get_user_by_email(email):
     """getting a user by their email"""
     user = User.query.filter(User.email == email).first()
-    # print("this is the user details")
-    # print(user)
 
     return user
 
@@ -43,27 +41,54 @@ def create_insulin(user_id, insulin_use, input_date):
 
     return insulin_entry
 
+def create_food(user_id, food_name, serving_size, calories, carbs):
+    """create food entry"""
+
+    food_entry = Food(user_id=user_id, food_name=food_name, serving_size=serving_size, calories=calories, carbs=carbs)
+
+    return food_entry
+
+def get_food_by_user_id(user_id):
+
+    food = Food.query.filter(Food.user_id == user_id).all()
+
+    return food
+
+def last_food_by_user(user_id):
+
+    food = Food.query.filter(Food.user_id == user_id).first()
+
+    return food
+
+def get_food_by_name(name):
+
+    food = Food.query.filter(Food.food_name == name).first()
+
+    return food
+
 def get_bs_by_user_id(user_id):
 
     bloodsugar = Bloodsugar.query.filter(Bloodsugar.user_id == user_id).all()
-    # print("this is blood sugar entries")
-    # print(bloodsugar)
+
 
     return bloodsugar
 
 def get_Insulin_by_user_id(user_id):
 
     insulin = Insulin.query.filter(Insulin.user_id == user_id).all()
-    # print("this is blood sugar entries")
-    # print(bloodsugar)
+
 
     return insulin
 
-def get_bs_by_dates(date):
+def get_bs_by_dates(user_id, date):
 
-    result = Bloodsugar.query.filter(Bloodsugar.input_date > date).all()
+    result = Bloodsugar.query.filter(Insulin.user_id == user_id).filter(Bloodsugar.input_date > date).all()
 
     return result
+
+def get_last_bs_entry():
+
+    return Bloodsugar.query.filter(Bloodsugar.input_date).first()
 
 def update_min(new_num, id):
 

@@ -1,1 +1,99 @@
-/* This is where we create event listeners and make the website reactive */
+body {
+    background: url("backgroundImg.jpg")no-repeat center center;
+    background-size: cover;
+    text-align: center;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  }
+
+nav {
+    background-color: floralwhite;
+    border: solid rgb(137, 137, 137);
+    border-radius: 2px;
+}
+
+form{
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+#brand {
+    font-family: fantasy;
+    font-size: large;
+}
+
+#bsRow {
+    border: 2px solid rgb(173, 173, 173);
+    background-color: rgb(255, 255, 255);   
+}
+
+
+#bsTable {
+    border: 2px solid rgb(137, 137, 137);
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+    padding: 10px;
+    padding-top: 10;
+    margin: 20px;  
+    box-shadow: 5px 5px rgba(0, 0, 0, 0.5); 
+}
+
+#insulinTable {
+    border: 2px solid rgb(137, 137, 137);
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+    padding: 10px;
+    padding-top: 10;
+    margin: 20px;  
+    box-shadow: 5px 5px rgba(0, 0, 0, 0.5); 
+}
+
+#data {
+    border: 2px solid rgb(137, 137, 137);
+    background-color: rgb(255, 255, 255);
+    margin: 10px;
+    padding: 20px;
+}
+
+#dataName {
+    border: 2px solid rgb(137, 137, 137);
+    background-color: rgb(255, 255, 255);
+}
+
+#days_back_form {
+    padding-top: 20px;
+    padding-bottom: 30px;
+}
+
+#average {
+    padding-bottom: 30px;
+    margin-right: 350px;
+    margin-left: 525px;
+}
+
+#calculate {
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+.info {
+    border: 2px solid black;
+    background-color: floralwhite;
+    border-radius: 10px;
+    box-shadow: 3px grey;
+    padding: 20px;
+    margin: 20px;
+}
+
+.container {
+    border: 2px solid black;
+    background-color: floralwhite;
+    border-radius: 10px;
+    padding: 40px;
+    margin: 40px;
+    align-self: auto;
+}

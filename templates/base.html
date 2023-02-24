@@ -7,28 +7,28 @@
         crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
 
-        {# If you want to use time scales, you have to import a date library and the Chart.js adapter #}
         <script src="https://cdn.jsdelivr.net/npm/luxon@2.0.2/build/global/luxon.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.1.0/dist/chartjs-adapter-luxon.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js" crossorigin></script>
+        <link rel="stylesheet" type="text/css" href="static/style.css">
     </head>
     <body>
 {% block nav %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a id="brand">Balance in Diabetes</a>
+<nav class="navbar">
+    <div class="navbar-header">
+        <a id="brand"><img src="static/Logo.png" style="height:30px; width: auto">Balance in Diabetes</a>
+    </div>
     <button
     class="navbar-toggler"
     type="button"
     data-bs-toggle="collapse"
     data-bs-target="#navbarSupportedContent"
-    aria-controls="navbarSupportedContent"
-    aria-expanded="false"
-    aria-label="Toggle navigation"
     >
         <span class="navbar-toggler-icon"></span>
     </button>
     
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav mr-auto">
             <li class="nav-item">
                 <a class="link" href="/">About</a>
             </li>
@@ -42,13 +42,14 @@
                     role="button"
                     data-bs-toggle="dropdown"
                     aria-haspopup="true"
-                    aria-expanded="false"
+                    aria-expanded="true"
                 >Resources</a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="https://www.instagram.com/type2diabetes.nutritionist/?hl=en">type2diabetes.nutritionist on Instagram</a></li>
                     <li><a class="dropdown-item" href="https://www.milkandhoneynutrition.com">Milk and Honey Nutrition</a></li>
                     <li><a class="dropdown-item" href="https://www.diabetesfoodhub.org">Diabetes Food Hub</a></li>
                     <li><a class="dropdown-item" href="https://diabetes.org">Diabetes.org</a></li>
+                    <li><a class="dropdown-item" href="https://fastfoodnutrition.org/fast-food-restaurants">Fast Food Nutrition</a></li>
                 </ul>
             </li>
         </ul>

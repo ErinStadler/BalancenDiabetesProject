@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-<!-- This is the page where user entries are displayed. -->
+<!-- This is the page where users can add foods to track, and see the foods they've tracked -->
 
 {% block head %}Data{% endblock %}
 
@@ -23,10 +23,10 @@
                 <a class="link" href="/homepage">Home</a>
             </li>
             <li class="nav-item">
-                <a class="link" href="/foodTracker">FoodTracking</a>
+                <a class="link" href="/foodTracker" style="color:red ; font-weight: bold;">FoodTracking</a>
             </li>
             <li class="nav-item">
-                <a class="link" href="/data" style="color:red ; font-weight: bold;">Data</a>
+                <a class="link" href="/data">Data</a>
             </li>
             <li class="nav-item">
                 <a class="link" href="/info">About</a>
@@ -44,7 +44,7 @@
                     role="button"
                     data-bs-toggle="dropdown"
                     aria-haspopup="true"
-                    aria-expanded="false"
+                    aria-expanded="true"
                 >Resources</a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="https://www.instagram.com/type2diabetes.nutritionist/?hl=en">type2diabetes.nutritionist on Instagram</a></li>
@@ -56,59 +56,54 @@
             </li>
         </ul>
     </div>
-
 </nav>
 {% endblock %}
 
 {% block body %}
-<!-- Using a jinja for loop to populate the tables to show all entries entered. -->
 <div class="container text-centered">
     <div class="row">
-        <form id="days_back_form">
-        <label for="days_back">Select Time Frame for Blood Sugar Averages:</label>
-        <select id="days_back" name="days_back">
-            <option value="1">1 Days</option>
-            <option value="2">2 Days</option>
-            <option value="7">7 Days</option>
-            <option value="14">14 Days</option>
-            <option value="30">30 Days</option>
-            <option value="60">60 Days</option>
-            <option value="90">90 Days</option>
-        </select>
-        <br><input type="submit">
-        </form>
+            <form action="/create_food">
+                <h3>Create New Food Entry</h3>
+                <input type="text" name="food_name" required>
+                <p>Enter Food Name</p>
+                <input type="number" name="serving_size" required>
+                <p>Serving Size in gram</p>
+                <input type="number" name="calories" required>
+                <p>Calories Per Serving</p>
+                <input type="number" name="carbs" required>
+                <p>Carbs Per Serving</p>
+                <input type="submit">
+            </form>
     </div>
-    <div class="row" id="average"></div>
-    <div class="row">
-        <div class="col" id="bsTable">
-            <table class="center">
-                <tr>
-                    <th>Blood Sugar Entries</th>
-                    <th>Date</th>
-                </tr>
-                {% for entry in bs_entries %}
-                <tr id="bsRow">
-                    <td id="data">{{entry.bloodsugar}}</td>
-                    <td id="data">{{entry.input_date}}</td>
-                </tr>
-                {% endfor %}
-            </table>
+        <div class="row">
+            <form id="add_food_to_calc">
+                <h3>Count Carbs and Calories</h3>
+                <input type="text" id="foodToAdd"><br>
+                <input type="submit">
+            </form>
+            <button id="calculate">Calculate</button>
+            <ul id="foodsAdded"></ul>
+            <div id="totals"></div>
         </div>
-        <div class="col" id="insulinTable">
-            <table class="center">
-                <tr>
-                    <th>Insulin Entries</th>
-                    <th>Date</th>
-                </tr>
-                {% for entry in insulin_entries %}
-                <tr id="insulinRow">
-                    <td id="data">{{entry.insulin_use}}</td>
-                    <td id="data">{{entry.input_date}}</td>
-                </tr>
-                {% endfor %}
-            </table>
+        <div class="row">
+            <div class="col">
+                <table id="foodTable" class="center">
+                    <tr>
+                        <th>Food</th>
+                        <th>Serving</th>
+                        <th>calories</th>
+                        <th>carbs</th>
+                    </tr>
+                    {% for foodEntry in food %}
+                    <tr id="foodRow">
+                        <td id="dataName">{{foodEntry.food_name}}</td>
+                        <td id="data">{{foodEntry.serving_size}}</td>
+                        <td id="data">{{foodEntry.calories}}</td>
+                        <td id="data">{{foodEntry.carbs}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
         </div>
-    </div>
 </div>
-<script src="/static/reactiveButtons.js"></script>
 {% endblock %}

@@ -19,4 +19,13 @@ CREATE TABLE insulin (
     user_id INTEGER REFERENCES users_profile(user_id) NOT NULL,
     insulin_use INTEGER NOT NULL,
     input_date TIMESTAMP NOT NULL DEFAULT current_TIMESTAMP
+);
+
+CREATE TABLE food (
+    food_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users_profile(user_id) NOT NULL,
+    food_name VARCHAR unique NOT NULL,
+    serving_size INTEGER NOT NULL,
+    calories INTEGER NOT NULL,
+    carbs INTEGER NOT NULL
 )

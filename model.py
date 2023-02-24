@@ -27,6 +27,7 @@ class User(db.Model):
 
     bloodsugar = db.relationship("Bloodsugar", back_populates="user")
     insulin = db.relationship("Insulin", back_populates="user")
+    food = db.relationship("Food", back_populates="user")
 
     def __repr__(self):
 
@@ -72,6 +73,33 @@ class Insulin(db.Model):
     def __repr__(self):
 
         return f"Insulin usage: {self.insulin_use} Input date: {self.input_date}"
+    
+class Food(db.Model):
+    """food tracking database, user populates"""
+
+    __tablename__ = "food"
+
+    food_id = db.Column(db.Integer,
+                        autoincrement=True,
+                        primary_key=True)
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey("users_profile.user_id"))
+    food_name = db.Column(db.String,
+                          nullable=False,
+                          unique=True)
+    serving_size = db.Column(db.Integer,
+                             nullable=False)
+    calories = db.Column(db.Integer,
+                         nullable=False)
+    carbs = db.Column(db.Integer,
+                      nullable=False)
+
+    user = db.relationship("User", back_populates="food")
+
+    def __repr__(self):
+
+        return f"Food name: {self.food_name} Serving size: {self.serving_size}"
+
 
 def connect_to_db(flask_app, db_uri="postgresql:///users", echo=True):
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri

@@ -1,69 +1,52 @@
-document.querySelector("#oneDays").addEventListener("click", (evt) => {
-    evt.preventDefaults;
-  
-    fetch("/dataOneButton")
+  document.getElementById("days_back_form").addEventListener("submit", (evt) => {
+    evt.preventDefault();
+
+    const daysBack = document.querySelector('#days_back').value;
+
+    fetch('/blood_sugars_days_back', {
+      method: 'POST',
+      body: JSON.stringify({daysBack: daysBack}),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .then((response) => response.json())
-    .then((jsonEntries) => {
-      document.querySelector("#average").innerHTML = jsonEntries.average;
-      })
+    .then((result) => {
+      document.querySelector("#average").innerHTML = `Blood Sugar Average: ${result.average}`;
     });
-  
-document.querySelector("#twoDays").addEventListener("click", (evt) => {
-    evt.preventDefaults;
-  
-    fetch("/dataTwoButton")
-    .then((response) => response.json())
-    .then((jsonEntries) => {
-      document.querySelector("#average").innerHTML = jsonEntries.average;
-    })
   });
   
-document.getElementById("sevenDays").addEventListener("click", (evt) => {
-    evt.preventDefaults;
-  
-    fetch("/dataSevenButton")
-    .then((response) => response.json())
-    .then((jsonEntries) => {
-      document.querySelector("#average").innerHTML = jsonEntries.average;
+let calories = 0
+let carbs = 0
+
+  document.getElementById("add_food_to_calc").addEventListener("submit", (evt) => {
+    evt.preventDefault();
+
+    const foodToAdd = document.querySelector('#foodToAdd').value;
+
+    fetch('/add_food', {
+      method: 'POST',
+      body: JSON.stringify({foodToAdd: foodToAdd}),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
-  });
-  
-document.getElementById("fourteenDays").addEventListener("click", (evt) => {
-    evt.preventDefaults;
-  
-    fetch("/dataFourteenButton")
     .then((response) => response.json())
-    .then((jsonEntries) => {
-      document.querySelector("#average").innerHTML = jsonEntries.average;
-    })
+    .then((result) => {
+      calories += result.calories
+      carbs += result.carbs
+      document.querySelector('#foodsAdded').insertAdjacentHTML('beforeend', `<li>${result.name, result.serving, result.calories, result.carbs}</li>`);
+    });
   });
-  
-document.getElementById("thirtyDays").addEventListener("click", (evt) => {
-    evt.preventDefaults;
-  
-    fetch("/dataThirtyButton")
-    .then((response) => response.json())
-    .then((jsonEntries) => {
-        document.querySelector("#average").innerHTML = jsonEntries.average;
-    })
-  });
-  
-document.getElementById("sixtyDays").addEventListener("click", (evt) => {
-    evt.preventDefaults;
-  
-    fetch("/dataSixtyButton")
-    .then((response) => response.json())
-    .then((jsonEntries) => {
-        document.querySelector("#average").innerHTML = jsonEntries.average;
-    })
-  });
-  
-document.getElementById("ninetyDays").addEventListener("click", (evt) => {
-    evt.preventDefaults;
-  
-    fetch("/dataNinetyButton")
-    .then((response) => response.json())
-    .then((jsonEntries) => {
-        document.querySelector("#average").innerHTML = jsonEntries.average;
-    })
-  });
+
+  document.querySelector("#calculate").addEventListener("click", (evt) => {
+    evt.preventDefault();
+
+    const ul = document.querySelector("ul");
+
+    while (ul.firstChild) {
+      ul.firstChild.remove();
+    }
+
+    document.querySelector("#totals").innerHTML = `Total Calories: ${calories}, Total Carbs: ${carbs}`
+  })

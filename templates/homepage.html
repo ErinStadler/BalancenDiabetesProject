@@ -4,24 +4,26 @@
     chart displaying current bloodsugar entries. -->
 
 {% block nav %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a id="brand">Balance in Diabetes</a>
+<nav class="navbar">
+    <div class="navbar-header">
+        <a id="brand"><img src="static/Logo.png" style="height:30px; width: auto">Balance in Diabetes</a>
+    </div>
     <button
     class="navbar-toggler"
     type="button"
     data-bs-toggle="collapse"
     data-bs-target="#navbarSupportedContent"
-    aria-controls="navbarSupportedContent"
-    aria-expanded="true"
-    aria-label="Toggle navigation"
     >
         <span class="navbar-toggler-icon"></span>
     </button>
     
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="link" href="/homepage">Home</a>
+                <a class="link" href="/homepage" style="color:red ; font-weight: bold;">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="link" href="/foodTracker">FoodTracking</a>
             </li>
             <li class="nav-item">
                 <a class="link" href="/data">Data</a>
@@ -49,6 +51,7 @@
                     <li><a class="dropdown-item" href="https://www.milkandhoneynutrition.com">Milk and Honey Nutrition</a></li>
                     <li><a class="dropdown-item" href="https://www.diabetesfoodhub.org">Diabetes Food Hub</a></li>
                     <li><a class="dropdown-item" href="https://diabetes.org">Diabetes.org</a></li>
+                    <li><a class="dropdown-item" href="https://fastfoodnutrition.org/fast-food-restaurants">Fast Food Nutrition</a></li>
                 </ul>
             </li>
         </ul>
@@ -58,14 +61,11 @@
 {% endblock %}
 
 {% block body %}
-<div class="container text=centered">
+<div class="container text-centered">
     <div class="row">
-        <div class="col">
-            <h1>Welcome {{ name }}, to the Balance in Diabetes family!</h1>
-        </div>
+        <h1>Welcome {{ name }}, to the Balance in Diabetes family!</h1>
     </div>
     <div class="row">
-        <div class="col">
             <div><canvas id="glucose_chart"></canvas></div>
             <form action="/create_bs_entry" method="POST">
                 <h3>Blood sugar entry <br><input type="number" name="bloodsugar_entry"></h3>
@@ -76,7 +76,6 @@
                 <input type="submit">
             </form>
             <a href="/data">See all data</a>
-        </div>
     </div>
 </div>
 <script src="/static/reactiveChart.js"></script>

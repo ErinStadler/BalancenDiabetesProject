@@ -1,11 +1,12 @@
 from flask import (Flask, render_template, request, flash, session, redirect, jsonify)
-from model import connect_to_db, db, Bloodsugar
+from model import connect_to_db, db
 import crud
 from jinja2 import StrictUndefined
-from datetime import date, timedelta, datetime
+from datetime import timedelta, datetime
 from random import choice
-import bcrypt
+import json
 import hashlib
+import pync
 
 
 app = Flask(__name__)
@@ -28,8 +29,6 @@ motivational_quotes = ["“All our dreams can come true, if we have the courage 
                        "“Hold the vision, trust the process.” —Unknown", "“Don’t be afraid to give up the good to go for the great.” —John D. Rockefeller", "“People who wonder if the glass is half empty or full miss the point. The glass is refillable.” —Unknown",
                        "“If you hear a voice within you say, ‘You cannot paint,’ then by all means paint, and that voice will be silenced.” ―Vincent Van Gogh", "“How wonderful it is that nobody need wait a single moment before starting to improve the world.” ―Anne Frank",
                        "“Some people want it to happen, some wish it would happen, others make it happen.” ―Michael Jordan", "“Great things are done by a series of small things brought together.” ―Vincent Van Gogh"]
-
-inspirational_quotes = [""]
 
 @app.route("/")
 def homepage():
@@ -63,6 +62,25 @@ def account_page():
 
     return render_template("account.html")
 
+@app.route("/foodTracker")
+def food_tracker():
+    """takes a user to food tracking page"""
+    user_email = session.get("email")
+    user = crud.get_user_by_email(user_email)
+    food = crud.get_food_by_user_id(user.user_id)
+
+    return render_template("foodTracker.html", food=food)
+
+@app.route("/data")
+def data_page():
+    """opens data page"""
+    user_email = session.get("email")
+    user = crud.get_user_by_email(user_email)
+    bs_entries = crud.get_bs_by_user_id(user.user_id)
+    insulin_entries = crud.get_Insulin_by_user_id(user.user_id)
+
+    return render_template("data.html", bs_entries=bs_entries, insulin_entries=insulin_entries)
+
 @app.route("/logout")
 def logout():
 
@@ -92,15 +110,10 @@ def login():
 
     user = crud.get_user_by_email(email)
 
-    if not user or user.password != password:
+    if not user or user.password != hashed.hexdigest():
         flash("email or password is incorrect.")
 
         return redirect("/login")
-    
-    # if not user or user.password != hashed.hexdigest():
-    #     flash("email or password is incorrect.")
-
-    #     return redirect("/login")
 
     else:
         user_name = user.name
@@ -109,6 +122,39 @@ def login():
 
     return render_template("homepage.html",
                            name=user_name)
+
+@app.route("/create_food", methods=["POST"])
+def create_food():
+    """creating a food item for user to find later"""
+
+    user_email = session.get("email")
+    user = crud.get_user_by_email(user_email)
+
+    food_name = request.args.get("name")
+    serving = request.args.get("serving")
+    calories = request.args.get("calories")
+    carbs = request.args.get("carbs")
+
+    food = crud.create_food(user.user_id, food_name, serving, calories, carbs)
+    db.session.add(food)
+    db.session.commit()
+
+    return redirect("/foodTracker") 
+
+@app.route("/add_food", methods=['POST'])
+def adding_food():
+
+    foodToAdd = str(request.json.get('foodToAdd'))
+    food = crud.get_food_by_name(foodToAdd)
+    print("this is food")
+    print(food)
+
+    if food == None:
+        flash("food not found.")
+    
+    else:
+
+        return jsonify({"name": food.food_name, "serving": food.serving_size, "calories": food.calories, "carbs": food.carbs})
 
 @app.route("/user", methods=["POST"])
 def register():
@@ -124,8 +170,6 @@ def register():
     salt = "ftviyogy8osbzyfucesuo"
     database_password = password+salt
     hashed = hashlib.md5(database_password.encode())
-    # print("result from hash")
-    # print(hashed.hexdigest())
 
     if crud.get_user_by_email(email):
         """if a user exists, tell them and redirect back to sign up page 
@@ -157,6 +201,8 @@ def register():
         
 @app.route("/update_min_range", methods=['POST'])
 def update_min_range():
+    """updates the users min_range"""
+
     user_email = session.get("email")
     user = crud.get_user_by_email(user_email)
 
@@ -175,6 +221,8 @@ def update_min_range():
 
 @app.route("/update_max_range", methods=['POST'])
 def update_max_range():
+    """updates the users max_range"""
+
     user_email = session.get("email")
     user = crud.get_user_by_email(user_email)
 
@@ -193,6 +241,8 @@ def update_max_range():
 
 @app.route("/update_name", methods=['POST'])
 def update_name():
+    """updates the users name"""
+
     user_email = session.get("email")
     user = crud.get_user_by_email(user_email)
 
@@ -211,6 +261,7 @@ def update_name():
 
 @app.route("/update_password", methods=['POST'])
 def update_password():
+    """updates the users password"""
     user_email = session.get("email")
     user = crud.get_user_by_email(user_email)
 
@@ -233,6 +284,7 @@ def update_password():
         
 @app.route("/create_bs_entry", methods=["POST"])
 def create_bs_entry():
+    """creates a blood sugar entry if correct value entered"""
     
     user_email = session.get("email")
     user = crud.get_user_by_email(user_email)
@@ -282,6 +334,7 @@ def create_bs_entry():
 
 @app.route("/create_insulin_entry", methods=["POST"])
 def create_insulin_entry():
+    """creates an insulin entry when user inputs correct value"""
     user_email = session.get('email')
     user = crud.get_user_by_email(user_email)
     insulin_entry = request.form.get("insulin_entry")
@@ -302,244 +355,43 @@ def create_insulin_entry():
 
     return render_template("homepage.html",
                             name=user_name)
-
-@app.route("/data")
-def data_page():
-    """opens data page"""
-    user_email = session.get("email")
+    
+@app.route(f"/blood_sugars_days_back", methods=['POST'])
+def data_by_days():
+    """get bloodsugar averages of how ever many days the user chooses."""
+    user_email = session.get('email')
     user = crud.get_user_by_email(user_email)
-    bs_entries = crud.get_bs_by_user_id(user.user_id)
-    insulin_entries = crud.get_Insulin_by_user_id(user.user_id)
-    # print("This is bs entry")
-    # print(bs_entries)
+    daysBack = int(request.json.get('daysBack'))
 
-    return render_template("data.html", bs_entries=bs_entries, insulin_entries=insulin_entries)
-    
-@app.route("/dataOneButton")
-def data_by_first_date():
-    """data for data one day button"""
-
-    # get bloodsugar entries in the last day
-    oneDayAgo = datetime.now() - timedelta(days=1)
-    one = crud.get_bs_by_dates(oneDayAgo)
+    daysAgo = datetime.now() - timedelta(days=daysBack)
+    data = crud.get_bs_by_dates(user.user_id, daysAgo)
 
     total = 0
     length = 0
 
-    for blood_sugar in one:
+    for blood_sugar in data:
         total = blood_sugar.bloodsugar + total
         length += 1
 
-    # print("Checking if query works for one")
-    # print(total)
-    # print(length)
-    average = round(total / length)
-    # print(average)
-
-    return jsonify({'average': average})
-
-@app.route("/dataTwoButton")
-def data_by_two_days():
-    # #get bloodsugar entries in the last two days
-
-    twoDaysAgo = datetime.now() - timedelta(days=2)
-    two = crud.get_bs_by_dates(twoDaysAgo)
-
-    total = 0
-    length = 0
-
-    for blood_sugar in two:
-        total = blood_sugar.bloodsugar + total
-        length += 1
-
-    # print("Checking if query works for two")
-    # print(total)
-    # print(length)
     average = round(total / length)
 
     return jsonify({'average': average})
-
-@app.route("/dataSevenButton")
-def data_by_seven_days():
-    #get bloodsugar entries in the last seven days
-
-    sevenDaysAgo = datetime.now() - timedelta(days=7)
-    seven = crud.get_bs_by_dates(sevenDaysAgo)
-
-    total = 0
-    length = 0
-
-    for blood_sugar in seven:
-        total = blood_sugar.bloodsugar + total
-        length += 1
-
-    # print("Checking if query works for seven")
-    # print(total)
-    # print(length)
-    average = round(total / length)
-
-    return jsonify({'average': average})
-
-@app.route("/dataFourteenButton")
-def data_by_fourteen_days():
-    #get bloodsugar entries in the last fourteen days
-
-    fourteenDaysAgo = datetime.now() - timedelta(days=14)
-    fourteen = crud.get_bs_by_dates(fourteenDaysAgo)
-
-    total = 0
-    length = 0
-
-    for blood_sugar in fourteen:
-        total = blood_sugar.bloodsugar + total
-        length += 1
-
-    # print("Checking if query works for fourteen")
-    # print(total)
-    # print(length)
-    average = round(total / length)
-
-    return jsonify({'average': average})
-
-@app.route("/dataThirtyButton")
-def data_by_thirty_days():
-    #get bloodsugar entries in the last thirty days
-
-    thirtyDaysAgo = datetime.now() - timedelta(days=30)
-    thirty = crud.get_bs_by_dates(thirtyDaysAgo)
-
-    total = 0
-    length = 0
-
-    for blood_sugar in thirty:
-        total = blood_sugar.bloodsugar + total
-        length += 1
-
-    # print("Checking if query works for thirty")
-    # print(total)
-    # print(length)
-    average = round(total / length)
-
-    return jsonify({'average': average})
-
-@app.route("/dataSixtyButton")
-def data_by_sixty_days():
-    #get bloodsugar entries in the last sixty days
-
-    sixtyDaysAgo = datetime.now() - timedelta(days=60)
-    sixty = crud.get_bs_by_dates(sixtyDaysAgo)
-
-    total = 0
-    length = 0
-
-    for blood_sugar in sixty:
-        total = blood_sugar.bloodsugar + total
-        length += 1
-
-    # print("Checking if query works for sixty")
-    # print(total)
-    # print(length)
-    average = round(total / length)
-
-    return jsonify({'average': average})
-    
-@app.route("/dataNinetyButton")
-def data_by_ninety_days():
-    #get bloodsugar entries in the last ninety days
-
-    ninetyDaysAgo = datetime.now() - timedelta(days=90)
-    ninety = crud.get_bs_by_dates(ninetyDaysAgo)
-
-    total = 0
-    length = 0
-
-    for blood_sugar in ninety:
-        total = blood_sugar.bloodsugar + total
-        length += 1
-
-    # print("Checking if query works for ninety")
-    # print(total)
-    # print(length)
-    average = round(total / length)
-
-    return jsonify({'average': average})
-
 
 @app.route("/entries")
 def get_entries():
     """getting bloodsugar entries for chart"""
-    user_email = session.get("email")
+    user_email = session.get('email')
     user = crud.get_user_by_email(user_email)
-    bs_entries = crud.get_bs_by_user_id(user.user_id)
+    
+    data = crud.get_bs_by_user_id(user.user_id)
 
-    oneDayAgo = datetime.now() - timedelta(days=1)
-    one = crud.get_bs_by_dates(oneDayAgo)
+    bs_data = []
 
-    twoDayAgo = datetime.now() - timedelta(days=2)
-    two = crud.get_bs_by_dates(twoDayAgo)
-
-    sevenDaysAgo = datetime.now() - timedelta(days=7)
-    seven = crud.get_bs_by_dates(sevenDaysAgo)
-
-    fourteenDaysAgo = datetime.now() - timedelta(days=14)
-    fourteen = crud.get_bs_by_dates(fourteenDaysAgo)
-
-    thirtyDaysAgo = datetime.now() - timedelta(days=30)
-    thirty = crud.get_bs_by_dates(thirtyDaysAgo)
-
-    sixtyDaysAgo = datetime.now() - timedelta(days=60)
-    sixty = crud.get_bs_by_dates(sixtyDaysAgo)
-
-    ninetyDaysAgo = datetime.now() - timedelta(days=90)
-    ninety = crud.get_bs_by_dates(ninetyDaysAgo)
-
-    all_bs_dates = []
-    one_bs_date = []
-    two_bs_dates = []
-    seven_bs_dates = []
-    fourteen_bs_dates = []
-    thirty_bs_dates = []
-    sixty_bs_dates = []
-    ninety_bs_dates = []
-    for blood_sugar_obj in bs_entries:
-        all_bs_dates.append({'bs': blood_sugar_obj.bloodsugar,
+    for blood_sugar_obj in data:
+        bs_data.append({'bs': blood_sugar_obj.bloodsugar,
                              'date': blood_sugar_obj.input_date.isoformat()})
-            
-    for blood_sugar_objOne in one:
-        one_bs_date.append({'bs': blood_sugar_objOne.bloodsugar,
-                             'date': blood_sugar_objOne.input_date.isoformat()})
-            
-    for blood_sugar_objTwo in two:
-        two_bs_dates.append({'bs': blood_sugar_objTwo.bloodsugar,
-                             'date': blood_sugar_objTwo.input_date.isoformat()})
-                
-    for blood_sugar_objSeven in seven:
-        seven_bs_dates.append({'bs': blood_sugar_objSeven.bloodsugar,
-                             'date': blood_sugar_objSeven.input_date.isoformat()})
-                    
-    for blood_sugar_objFourteen in fourteen:
-        fourteen_bs_dates.append({'bs': blood_sugar_objFourteen.bloodsugar,
-                             'date': blood_sugar_objFourteen.input_date.isoformat()})
-                        
-    for blood_sugar_objThirty in thirty:
-        thirty_bs_dates.append({'bs': blood_sugar_objThirty.bloodsugar,
-                             'date': blood_sugar_objThirty.input_date.isoformat()})
-                            
-    for blood_sugar_objSixty in sixty:
-        sixty_bs_dates.append({'bs': blood_sugar_objSixty.bloodsugar,
-                             'date': blood_sugar_objSixty.input_date.isoformat()})
-                                
-    for blood_sugar_objNinety in ninety:
-        ninety_bs_dates.append({'bs': blood_sugar_objNinety.bloodsugar,
-                             'date': blood_sugar_objNinety.input_date.isoformat()})
-                                    
-    # print("this is two days list")
-    # print(two_bs_dates)
 
-    return jsonify({'all_bs_dates': all_bs_dates, 'one_bs_date': one_bs_date, 
-                    'two_bs_dates': two_bs_dates, 'seven_bs_dates': seven_bs_dates, 
-                    'fourteen_bs_dates': fourteen_bs_dates, 'thirty_bs_dates': thirty_bs_dates, 
-                    'sixty_bs_dates': sixty_bs_dates, 'ninety_bs_dates': ninety_bs_dates})
+    return jsonify({'bs_data': bs_data})
 
 if __name__ == "__main__":
     connect_to_db(app)
