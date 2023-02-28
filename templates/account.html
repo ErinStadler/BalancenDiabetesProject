@@ -66,26 +66,27 @@
         <form action="/update_password" method="POST">
             <h3>Update Password <br><input type="password" name="update_password" 
                 pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
-                title="Must contain one number, one uppercase letter, one lower case letter and must be 8 characters long" required></h3>
-                <input type="submit">
+                title="Must contain one number, one uppercase letter, one lower case letter and must be 8 characters long" 
+                class="inputs" required></h3>
+                <input type="submit" class="inputs">
         </form>
     </div>
     <div class="row">
         <form action="/update_name" method="POST">
-            <h3>Update Name <br><input type="text" name="update_name"></h3>
-            <input type="submit">
+            <h3>Update Name <br><input type="text" name="update_name" class="inputs"></h3>
+            <input type="submit" class="inputs">
         </form>
     </div>
     <div class="row">
         <form action="/update_min_range" method="POST">
-            <h3>Update Min Range <br><input type="number" name="update_min_range"></h3>
-            <input type="submit">
+            <h3>Update Min Range <br><input type="number" name="update_min_range" class="inputs"></h3>
+            <input type="submit" class="inputs">
         </form>
     </div>
     <div class="row">
         <form action="/update_max_range" method="POST">
-            <h3>Update Max Range <br><input type="number" name="update_max_range"></h3>
-            <input type="submit">
+            <h3>Update Max Range <br><input type="number" name="update_max_range" class="inputs"></h3>
+            <input type="submit" class="inputs">
         </form>
     </div>
 </div>

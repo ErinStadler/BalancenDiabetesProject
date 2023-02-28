@@ -64,27 +64,17 @@
     <div class="row">
             <form action="/create_food">
                 <h3>Create New Food Entry</h3>
-                <input type="text" name="food_name" required>
+                <input type="text" name="food_name"  class="inputs" required>
                 <p>Enter Food Name</p>
-                <input type="number" name="serving_size" required>
+                <input type="number" name="serving_size"  class="inputs" required>
                 <p>Serving Size in gram</p>
-                <input type="number" name="calories" required>
+                <input type="number" name="calories"  class="inputs" required>
                 <p>Calories Per Serving</p>
-                <input type="number" name="carbs" required>
+                <input type="number" name="carbs"  class="inputs" required>
                 <p>Carbs Per Serving</p>
-                <input type="submit">
+                <input type="submit" class="inputs">
             </form>
     </div>
-        <div class="row">
-            <form id="add_food_to_calc">
-                <h3>Count Carbs and Calories</h3>
-                <input type="text" id="foodToAdd"><br>
-                <input type="submit">
-            </form>
-            <button id="calculate">Calculate</button>
-            <ul id="foodsAdded"></ul>
-            <div id="totals"></div>
-        </div>
         <div class="row">
             <div class="col">
                 <table id="foodTable" class="center">

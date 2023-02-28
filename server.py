@@ -4,9 +4,7 @@ import crud
 from jinja2 import StrictUndefined
 from datetime import timedelta, datetime
 from random import choice
-import json
 import hashlib
-import pync
 
 
 app = Flask(__name__)
@@ -123,15 +121,15 @@ def login():
     return render_template("homepage.html",
                            name=user_name)
 
-@app.route("/create_food", methods=["POST"])
+@app.route("/create_food")
 def create_food():
     """creating a food item for user to find later"""
 
     user_email = session.get("email")
     user = crud.get_user_by_email(user_email)
 
-    food_name = request.args.get("name")
-    serving = request.args.get("serving")
+    food_name = request.args.get("food_name")
+    serving = request.args.get("serving_size")
     calories = request.args.get("calories")
     carbs = request.args.get("carbs")
 
@@ -140,21 +138,6 @@ def create_food():
     db.session.commit()
 
     return redirect("/foodTracker") 
-
-@app.route("/add_food", methods=['POST'])
-def adding_food():
-
-    foodToAdd = str(request.json.get('foodToAdd'))
-    food = crud.get_food_by_name(foodToAdd)
-    print("this is food")
-    print(food)
-
-    if food == None:
-        flash("food not found.")
-    
-    else:
-
-        return jsonify({"name": food.food_name, "serving": food.serving_size, "calories": food.calories, "carbs": food.carbs})
 
 @app.route("/user", methods=["POST"])
 def register():
